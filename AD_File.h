@@ -13,8 +13,8 @@ protected:
 public:
 	AD_File();
 	AD_File( const string& newName);
-	string getFN()const { return this->FileName; }
-	void setFN(const string& FM)throw(const char*);
+	string getFileName()const { return this->FileName; }
+	void setFileName(const string& FM)throw(const char*);
 	string getTime()const;
 	void setTime();
 	const bool operator==(const AD_File& o) { return this->FileName ==o.FileName ? true : false; };

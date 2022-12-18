@@ -25,12 +25,12 @@ AD_File::AD_File()
 
 AD_File::AD_File (const string& newName)
 {
-    setFN(newName);
+    setFileName(newName);
     //this->lastUpadateTime = new tm;
     this->setTime();
 }
 
-void AD_File::setFN(const string& FM)throw(char*)
+void AD_File::setFileName(const string& FM)throw(char*)
 {
 
     if (checkProhibitedCharacters(FM)) 
