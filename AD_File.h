@@ -12,9 +12,9 @@ protected:
 	tm lastUpadateTime;
 public:
 	AD_File();
-	AD_File(string& newName);
+	AD_File( const string& newName);
 	string getFN() { return this->FileName; }
-	void setFN(string& FM)throw(const char*);
+	void setFN(const string& FM)throw(const char*);
 	string getTime()const;
 	void setTime();
 	const bool operator==(const AD_File& o) { return this->FileName ==o.FileName ? true : false; };

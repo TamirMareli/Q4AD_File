@@ -23,14 +23,14 @@ AD_File::AD_File()
     this->setTime();
 }
 
-AD_File::AD_File(string& newName)
+AD_File::AD_File (const string& newName)
 {
     setFN(newName);
     //this->lastUpadateTime = new tm;
     this->setTime();
 }
 
-void AD_File::setFN(string& FM)throw(char*)
+void AD_File::setFN(const string& FM)throw(char*)
 {
 
     if (checkProhibitedCharacters(FM)) 
