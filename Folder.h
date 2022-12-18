@@ -22,4 +22,8 @@ public:
 	void addFileToArray(const Folder& nf)throw(const char*);
 	~Folder();
 	Folder(const Folder& nf)throw(char*);
+	Folder(const Folder& other, const string& path);
+	void mkfile(const string& fileName, const string& data);
+	void mkDir(const string& fileName);
+	void dir()const;
 };

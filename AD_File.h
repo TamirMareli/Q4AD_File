@@ -13,7 +13,7 @@ protected:
 public:
 	AD_File();
 	AD_File( const string& newName);
-	string getFN() { return this->FileName; }
+	string getFN()const { return this->FileName; }
 	void setFN(const string& FM)throw(const char*);
 	string getTime()const;
 	void setTime();

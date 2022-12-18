@@ -83,3 +83,43 @@ Folder::Folder(const Folder& nf)throw(const char*):AD_File(nf.FileName)
 	this->path = nf.path;
 	throw "no copy constructor";
 }
+
+Folder::Folder(const Folder& other, const string& path)
+{
+	this->path = path;
+	for (int i = 0; i < this->dfSize; i++)
+		delete this->df[i];
+	delete[] this->df;
+	for (int i = 0; i < this->fSize; i++)
+		delete this->f[i];
+	delete[] this->f;
+	this->dfSize = other.dfSize;
+	this->fSize = other.fSize;
+	for (int i = 0; i < this->dfSize; i++)
+		addFileToArray(*other.df[i]);
+	for (int i = 0; i < this->fSize; i++)
+		addFileToArray(*other.f[i]);
+}
+
+void Folder::mkfile(const string& fileName, const string& data)
+{
+	DataFile temp = DataFile(fileName, data);
+	addFileToArray(temp);
+			
+}
+
+void Folder::mkDir(const string& fileName)
+{
+	Folder temp = Folder(fileName,this->path);
+	addFileToArray(temp);
+}
+
+void Folder::dir() const
+{
+	cout << "Files in directory C::";
+	for (int i = 0; i < this->dfSize; i++) {
+		cout << this->getTime() << "  " << "<DIR>" << "  " << fixed << setprecision(2) << (float)this->df[i]->getSize() / 1000 << "KB" << "  " << this->df[i]->getFN();
+	}
+
+}
+

@@ -12,7 +12,7 @@ protected:
 	string data;
 public:
 	DataFile() :AD_File() { this->data = "Empty"; }
-	DataFile(string &fileName, string& data);
+	DataFile(const string &fileName, const string& data);
 	const bool operator==(const DataFile& o);
 	int getSize() { return data.size(); };
 
