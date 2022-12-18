@@ -1,0 +1,195 @@
+#include "Folder.h"
+Folder* Folder::root=new Folder("", "C:");
+string Folder:: getFullPath()const {
+	string newPath = this->path + '\\' + this->getFileName();
+	if (newPath == "C:\\")
+		newPath = "C:";
+	return newPath;
+}
+Folder::Folder( string fileName,  string path):AD_File(this->FileName) {
+	this->path = path;
+}
+
+void Folder::addFileToArray(const DataFile& df)throw(const char*) {
+	for(int i=0;i<this->dfSize;i++)
+		if(this->df[i]->operator==(df))
+			throw "File already exists";
+	DataFile** temp = new DataFile * [this->dfSize];
+	for (int i = 0; i < this->dfSize; i++) {
+		temp[i] = this->df[i];
+		//delete this->df[i];
+	}
+	delete[] this->df;
+	this->df = new DataFile * [this->dfSize+1];
+	for (int i = 0; i < this->dfSize; i++) {
+		this->df[i] = temp[i];
+		delete temp[i];
+	}
+	delete[] temp;
+	this->dfSize++;
+	this->df[this->dfSize - 1] = new DataFile(df);
+}
+
+void Folder::addFileToArray(const Folder& nf)throw(const char*) {
+	for (int i = 0; i < this->fSize; i++)
+		if (this->f[i]->getFileName()==nf.getFileName())
+			throw "File already exists";
+	Folder** temp = new Folder * [this->fSize];
+	for (int i = 0; i < this->fSize; i++) {
+		temp[i] = new Folder(*this->f[i], nf.path);
+		//delete this->f[i];
+	}
+	delete[] this->f;
+	this->f = new Folder * [this->fSize + 1];
+	for (int i = 0; i < this->dfSize; i++) {
+		this->f[i] = new Folder(*temp[i], this->path);
+		delete temp[i];
+	}
+	delete[] temp;
+	this->fSize++;
+	this->f[this->dfSize - 1] = new Folder(nf, this->path);
+}
+Folder::Folder(const Folder& nf, const string& path) {
+	for (int i = 0; i < this->dfSize; i++)
+		delete this->df[i];
+	delete[] this->df;
+	for (int i = 0; i < this->fSize; i++)
+		delete this->f[i];
+	delete[] this->f;
+
+	this->FileName = nf.FileName;
+	this->path = path;
+	this->dfSize = nf.dfSize;
+	this->fSize = nf.fSize;
+	for (int i = 0; i < this->dfSize; i++)
+		addFileToArray(this->df[i][0]);
+	for (int i = 0; i < this->fSize; i++)
+		addFileToArray(this->f[i][0]);
+}
+
+void Folder::mkfile( string fileName, string data) {
+	DataFile temp = DataFile(fileName, data);
+	this->addFileToArray(temp);
+}
+
+void Folder:: mkDir(string fileName) {
+	string newPath =  this->path + '\\' + fileName;
+	if (newPath == "C:\\")
+		newPath = "C:";
+	Folder temp = Folder(FileName,newPath);
+	this->addFileToArray(temp);
+}
+
+//Folder::~Folder()
+//{
+//	for (int i = 0; i < this->fSize; i++)
+//		delete this->f[i];
+//	delete[]this->f;
+//
+//	for (int i = 0; i < this->dfSize; i++)
+//		delete this->df[i];
+//	delete[] this->df;
+//}
+
+void Folder::dir() const
+{
+	cout << "Files in directory C::";
+	for (int i = 0; i < this->dfSize; i++) {
+		cout << this->getTime() << "  " << "<DIR>" << "  " << fixed << setprecision(2) << (float)this->df[i]->getSize() / 1024.0 << "KB" << "  " << this->df[i]->getFileName();
+	}
+	for (int i = 0; i < this->fSize; i++) {
+		cout << this->getTime()<< "  " << this->f[i]->getFileName();
+	}
+
+}
+
+Folder::Folder(const Folder& nf)throw(const char*) :AD_File(nf.FileName)
+{
+	throw "no copy constructor";
+}
+///////////////////////////////
+Folder* Folder::cd(string path)
+{
+	if (path == "C:")
+	{
+		return Folder::root;
+	}
+	Folder* f = SearchFiles(*Folder::root, path);
+	if (f == NULL)
+		throw "folder not found";
+	else
+		return f;
+}
+
+
+Folder* SearchFiles(const Folder& root, string path)
+{
+	int backSlashIndex = path.find("\\");
+	int secondBackSlashIndex = path.find("\\", backSlashIndex + 1);
+	if (backSlashIndex != std::string::npos)
+	{
+		string searchFolder = path.substr(backSlashIndex + 1, path.length() - 1);
+		string newPath = searchFolder;
+
+		if (secondBackSlashIndex != std::string::npos)
+		{
+			searchFolder = path.substr(backSlashIndex + 1, secondBackSlashIndex - (backSlashIndex + 1));
+		}
+
+		for (int i = 0; i < root.fSize; i++)
+		{
+			if ((root.f[i])->getFileName() == searchFolder)
+			{
+				
+				if (newPath.find("\\") == std::string::npos)
+				{
+					
+					return root.f[i];
+				}
+				else
+				{
+					
+					return SearchFiles(*root.f[i], path.substr(backSlashIndex + 1, path.length() - 1));
+				}
+			}
+		}
+		return NULL;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma once
+#define _CRT_SECURE_NO_WARNINGS
+#include <string>
+#include <iostream> 
+#include <iomanip>
+#include "AD_File.h"
+#include "DataFile.h"
+#include <sstream>
+using namespace std;
+class Folder :public AD_File
+{
+	Folder** f;
+	DataFile** df;
+	int fSize;
+	int dfSize;
+	string path;
+public:
+	static Folder* root;
+	Folder( string fileName, string path);
+	string getFullPath()const;
+	void addFileToArray(const DataFile& df)throw(const char*);
+	void addFileToArray(const Folder& nf)throw(const char*);
+	Folder(const Folder& nf, const string& path);
+	void mkfile( string fileName, string data);
+	void mkDir( string fileName);
+	void dir()const;
+	//~Folder();
+	Folder(const Folder& nf)throw(char*);
+	//////////////////
+	static Folder* cd(string path);
+	friend static Folder* SearchFiles(const Folder& root, string _path);
+};
